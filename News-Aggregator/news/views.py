@@ -1,4 +1,10 @@
 from django.shortcuts import render
+from .models import Headline
+
+def home(request):
+    objects = Headline.objects.all()
+    return render(request, "news/home.html", {"object_list": objects})
+
 import requests
 from django.shortcuts import render, redirect
 from bs4 import BeautifulSoup as BSoup
@@ -35,47 +41,52 @@ from news.models import Headline
 #         new_headline.save()
 #     return redirect("../")
 
-def scrape(request,name=None):
+def scrape(request, name=None):
     import requests
     from bs4 import BeautifulSoup
+    from .models import Headline
 
-    Headline.objects.all().delete()  # optional, for clean reloads
-    
-    url = "https://www.theonion.com/"
-    response = requests.get(url)
+    Headline.objects.all().delete()
+
+    base = "https://www.theonion.com/"
+
+    category_map = {
+        "latest": "https://www.theonion.com/latest",
+        "entertainment": "https://www.theonion.com/entertainment",
+        "sports": "https://www.theonion.com/sports",
+        "politics": "https://www.theonion.com/politics",
+        "opinion": "https://www.theonion.com/opinion",
+        "breaking-news": "https://www.theonion.com/tag/breaking-news",
+    }
+
+    # default fallback
+    if name not in category_map:
+        target_url = base
+    else:
+        target_url = category_map[name]
+
+    response = requests.get(target_url)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    articles = soup.find_all('article')
+    articles = soup.find_all("h2")
 
-    for a in articles:
-        title_tag = a.find('h2')
-        if not title_tag:
+    for h in articles:
+        a = h.find("a")
+        if not a:
             continue
-        
-        title = title_tag.get_text()
-        link = title_tag.find('a')['href']
 
-        # extract image
-        img_tag = a.find('img')
+        title = a.get_text(strip=True)
+        url = a["href"]
 
-        if img_tag:
-            if img_tag.get('data-src'):
-                img_url=img_tag.get('data-src')
-            elif img_tag.get('src'):
-                img_url=img_tag.get('src')
-            else:
-                img_url=""
-        else:
-            img_url=""
-        
-
+        # save
         Headline.objects.create(
             title=title,
-            url=link,
-            image=img_url
+            url=url,
+            image=None
         )
 
-    return redirect('/')
+    return redirect("/")
+
 
 
 def news_list(request):
