@@ -46,10 +46,6 @@ def scrape(request, name=None):
     from bs4 import BeautifulSoup
     from .models import Headline
 
-    Headline.objects.all().delete()
-
-    base = "https://www.theonion.com/"
-
     category_map = {
         "latest": "https://www.theonion.com/latest",
         "entertainment": "https://www.theonion.com/entertainment",
@@ -59,39 +55,57 @@ def scrape(request, name=None):
         "breaking-news": "https://www.theonion.com/tag/breaking-news",
     }
 
-    # default fallback
-    if name not in category_map:
-        target_url = base
-    else:
-        target_url = category_map[name]
+    url = category_map.get(name, "https://www.theonion.com/")
 
-    response = requests.get(target_url)
+    response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    articles = soup.find_all("h2")
+    cards = soup.find_all("article")
 
-    for h in articles:
-        a = h.find("a")
+    temp_list = []
+
+    for c in cards:
+
+        title_tag = c.find("h2")
+        if not title_tag:
+            continue
+        
+        a = title_tag.find("a")
         if not a:
             continue
-
+        
         title = a.get_text(strip=True)
-        url = a["href"]
+        link = a["href"]
 
-        # save
-        Headline.objects.create(
-            title=title,
-            url=url,
-            image=None
-        )
+        img_tag = c.find("img")
 
-    return redirect("/")
+        if img_tag:
+            image = img_tag.get("data-src") or img_tag.get("src")
+        else:
+            image = None
+
+        temp_list.append({
+            "title": title,
+            "url": link,
+            "image": image
+        })
+
+    return render(request, "news/home.html", {"object_list": temp_list})
 
 
 
-def news_list(request):
-    headlines = Headline.objects.all()[::-1]
-    context = {
-        "object_list": headlines,
-    }
-    return render(request, "news/home.html", context)
+
+# def news_list(request):
+#     headlines = Headline.objects.all()[::-1]
+#     context = {
+#         "object_list": headlines,
+#     }
+#     return render(request, "news/home.html", context)
+
+def home(request):
+    headlines = Headline.objects.all().order_by('-id')
+
+    if not headlines.exists():
+        return redirect('scrape', name='latest')
+    
+    return render(request, "news/home.html", {"object_list": headlines})
