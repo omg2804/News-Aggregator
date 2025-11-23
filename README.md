@@ -1,5 +1,4 @@
-## Website Live Link
-https://news-aggregator-ku26.onrender.com/
+
 
 </p>
 <h1 align = 'center'>News Aggregator</h1>
@@ -7,28 +6,39 @@ https://news-aggregator-ku26.onrender.com/
 
 <br>
 
-[![](https://img.shields.io/badge/Made_with-Python3-blue?style=for-the-badge&logo=python)](https://www.python.org "Python3")[![](https://img.shields.io/badge/Made_with-Django-blue?style=for-the-badge&logo=django)](https://www.djangoproject.com/ "Django")
+
 
 </p>
 
-## Description
+## Overview
 
-News aggregator is a Django project to scrape a news website using Beautiful soup and request module and hence combination of web crawlers and web applications.
-Both of these technologies have their implementation in Python.
+News Aggregator is a web application built with **Python & Django** that scrapes news articles from *TheOnion.com* using Requests + BeautifulSoup, stores them in a database, and displays them in a clean UI.
+
+Users can browse news by category, access the original article source, share via social platforms, switch between light/dark mode, and manage scraped headlines using Django Admin.
+
 
 ## Features
 
-Our news aggregator works in 3 steps:<br>
-1.It scrapes the news website for the articles.In this Django project, we are scraping a website 'www.theonion.com'<br>
-(We have scraped news articles from 'latest' section of 'www.theonion.com' for demonstration)<br>
-2.Then it stores the article’s images, links, and title.<br>
-3.The stored objects in the database are served to the client. The client gets information in a nice template by clicking the 'Load news' button and select the different options available to you.The options are: Latest,Entertainment,Sports,Politics,Opinion,Breaking-News<br>
+- Web scraping using BeautifulSoup
+- Category-wise news extraction (Latest, Sports, Politics, Entertainment, etc.)
+- SQLite storage for scraped articles
+- Modern Bootstrap UI
+- Light / Dark Mode toggle
+- Share articles via:
+  - Facebook
+  - WhatsApp
+  - Telegram
+- Copy article link to clipboard
+- Placeholder image support for missing images
+- Django Admin Panel access
 
-        ----------------------------------------------------------------------------------------
+      
 ### Screenshots ###
 ## Latest
 ![](https://github.com/sam-boghara/News-Aggregator/blob/master/screenshots/latest_light_mode.PNG)
 ![](https://github.com/sam-boghara/News-Aggregator/blob/master/screenshots/latest_night_mode.PNG)
+<img width="1918" height="896" alt="image" src="https://github.com/user-attachments/assets/72e0969c-d306-46e8-99eb-918ff1b306a8" />
+
 ## Entertainment
 ![](https://github.com/sam-boghara/News-Aggregator/blob/master/screenshots/entertainment_light_mode.PNG)
 ![](https://github.com/sam-boghara/News-Aggregator/blob/master/screenshots/entertainment_night_mode.PNG)
